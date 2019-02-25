@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bugwords</title>
+    <meta name="viewport" content="width=device-width">
+    <script src="/static/mnemonic.js">
+    </script>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <h1>
+      <a href="/">bugwords!</a>
+    </h1>
+    <p>Transform boring old bug numbers into short, memorable URLs. Just paste
+    your bug number or bugzilla URL into the form below, then copy and share
+    the new link that appears below it:</p>
+    <table>
+      <tr>
+        <td>
+          <label for="q">Bug:</label>
+        </td>
+        <td>
+          <form action="/" method="GET">
+            <input id="q" value="" placeholder="Enter a bug number or bugzilla link">
+          </form>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="url">Link:</label>
+        </td>
+        <td>
+          <input id="url" value="" readonly> <a id="link" href="">(go)</a>
+        </td>
+      </tr>
+    </table>
+    <p>You can also look up multiple bugs using the  <a href="/search">search form</a>.</p>
+    <hr>
+    <p>Currently works with bugzilla.mozilla.org only.  Future plans include:</p>
+    <ul>
+      <li>Support for other bug trackers.</li>
+      <li>Browser extension/userscript to automatically insert bugwd links on
+        other sites.</li>
+    </ul>
+    <hr>
+    <p id="footer">made by <a href="http://limpet.net/mbrubeck">Matt Brubeck </a>• <a href="http://github.com/mbrubeck/bugwd"> source code</a>
+    </p>
+    <script>
+      "use strict";
+      var q = document.getElementById("q");
+      var url = document.getElementById("url");
+      var link = document.getElementById("link");
+
+      function selectLink() {
+        url.focus();
+        url.selectionStart = 0;
+        url.selectionEnd = url.value.length;
+      }
+
+      function getNumber(str) {
+        var matches = str.match(/[0-9]+/);
+        return matches && +matches[0];
+      }
+
+      function update() {
+        var id = getNumber(q.value);
+        var words;
+
+        if (id != null) {
+          try {
+            words = mnemonic.encode_int32(+id);
+          } catch (e) {}
+        }
+        if (words) {
+          url.value = link.href = "http://bugwd.com/" + words;
+          document.title = "Bug " + id + " (" + words + ")";
+        } else {
+          url.value = link.href = "";
+          document.title = "bugwords";
+        }
+      }
+
+      q.addEventListener("keypress", function (event) {
+        if (event.keyCode == event.DOM_VK_RETURN) {
+          selectLink();
+          var id = getNumber(q.value);
+          if (id == null)
+            id = "";
+          history.pushState({ q: q.value }, null, "/" + id);
+          event.preventDefault();
+        }
+      }, false);
+
+      window.addEventListener("popstate", function (event) {
+        if (event.state && "q" in event.state) {
+          q.value = event.state.q;
+          update();
+        }
+      }, false);
+
+      q.addEventListener("input", update, false);
+
+      url.addEventListener("click", selectLink, false);
+
+      window.addEventListener("load", function () {
+        history.replaceState({ q: q.value }, null, document.URL);
+        if (url.value) {
+          selectLink();
+        } else {
+          q.focus();
+        }
+      }, false);
+    </script>
+  </body>
+</html>

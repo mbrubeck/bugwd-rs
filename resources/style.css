@@ -1,0 +1,44 @@
+body {
+  background: white;
+  color: black;
+  font-family: sans-serif;
+  max-width: 50em;
+}
+:link, :visited {
+  color: rgba(237, 93, 15, 1);
+}
+::selection {
+  color: white;
+  background: rgba(237, 93, 15, 1); /* Safari */
+}
+::-moz-selection {
+  color: white;
+  background: rgba(237, 93, 15, 1); /* Firefox */
+}
+
+h1 {
+  font-weight: normal;
+}
+h1 :link, h1 :visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+input {
+  margin: .25em;
+  padding: .25em;
+  font-size: 120%;
+  min-width: 25em;
+}
+input[type="submit"] {
+  min-width: 3em;
+}
+#footer {
+  font-size: 80%;
+}
+#link[href=""] {
+  display: none;
+}
+hr {
+  margin: 2em 0;
+}

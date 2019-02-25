@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bugwords search</title>
+    <meta name="viewport" content="width=device-width">
+    <script src="/static/mnemonic.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+      body {
+        max-width: 100%;
+      }
+      .hidden {
+        display: none;
+      }
+      #results {
+        table-layout: fixed;
+        width: 100%;
+      }
+      #results td {
+        padding: 0.5em;
+        vertical-align: top;
+      }
+      #results td:first-child {
+        width: 10em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      <a href="/">bugwords!</a>
+    </h1>
+    <form action="/search" method="GET">
+      <p>
+      <label for="q">Search:</label>
+      <input id="q" name="quicksearch" value="" placeholder="You can use quicksearch syntax like &quot;@mbrubeck&quot;">
+      <input type="Submit" value="Go"> (<a href="https://bugzilla.mozilla.org/page.cgi?id=quicksearch.html">help</a>)</p>
+    </form>
+    <p id="loading" class="hidden">Loading...</p>
+    <p id="noresults" class="hidden">No results</p>
+    <table id="results">
+    </table>
+    <hr>
+    <div id="footer">
+      <p>Tip: You can turn a regular bugzilla.mozilla.org search into a bugwd
+      search by replacing "https://bugzilla.mozilla.org" with
+      "http://bugwd.com" in the address.</p>
+      <p>In Firefox, right-click on the search box and "Add a keyword for this
+      search" if you want to use bugwords to search from your address bar!</p>
+      <hr>
+      <p>made by <a href="http://limpet.net/mbrubeck">Matt Brubeck </a>• <a href="http://github.com/mbrubeck/bugwd"> source code</a>
+      </p>
+    </div>
+    <script>
+      "use strict";
+      var prefix = "http://bugwd.com/";
+      var api = "https://bugzilla.mozilla.org/rest/bug";
+      var extra = "&include_fields=id,summary&limit=400";
+
+      function search(query) {
+        var url = api + query + extra;
+        var loading = document.getElementById("loading");
+        noresults.classList.add("hidden");
+        loading.classList.remove("hidden");
+
+        var req = new XMLHttpRequest();
+        req.open("get", url, true);
+        req.setRequestHeader("Accept", "application/json");
+        req.onload = function() {
+          loading.classList.add("hidden");
+          var result = JSON.parse(this.responseText);
+          if (result.bugs && result.bugs.length) {
+            render(result.bugs);
+          } else {
+            noresults.classList.remove("hidden");
+          }
+        };
+        req.send();
+      }
+
+      function render(bugs) {
+        var frag = document.createDocumentFragment();
+        bugs.forEach(function(bug) {
+          var tr = document.createElement("tr");
+          frag.appendChild(tr);
+          var td = document.createElement("td");
+          tr.appendChild(td);
+
+          var words = mnemonic.encode_int32(+bug.id);
+          var url = prefix + words;
+          var link = document.createElement("a");
+          link.setAttribute("href", url);
+          link.textContent = words;
+          td.appendChild(link);
+
+          td = document.createElement("td");
+          td.textContent = bug.summary + " (bug " + bug.id + ")";
+          tr.appendChild(td);
+        });
+        document.getElementById("results").appendChild(frag);
+      }
+
+      var query = location.search;
+      if (query) {
+        search(query);
+      }
+    </script>
+  </body>
+</html>
