@@ -1,5 +1,5 @@
 [package]
-name = "bugwd-rs"
+name = "bugwd"
 version = "0.1.0"
 authors = ["Matt Brubeck <mbrubeck@limpet.net>"]
 edition = "2018"

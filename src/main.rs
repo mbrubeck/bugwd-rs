@@ -6,8 +6,12 @@ use rouille::{
     router,
 };
 
+fn get_server_port() -> u16 {
+    std::env::var("PORT").ok().and_then(|p| p.parse().ok()).unwrap_or(8080)
+}
+
 fn main() {
-    rouille::start_server("0.0.0.0:8080", |request| {
+    rouille::start_server(("0.0.0.0", get_server_port()), |request| {
         router!(request,
             (GET) ["/"] =>
                 Response::html(include_str!("../resources/form.html")),
