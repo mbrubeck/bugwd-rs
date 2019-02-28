@@ -1,6 +1,3 @@
-// TODO: caching headers
-// TODO: static file compression
-
 use rouille::{
     Response,
     router,
