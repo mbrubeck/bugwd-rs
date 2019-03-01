@@ -60,10 +60,7 @@
       function search(query) {
         var url = api + query + extra;
         var loading = document.getElementById("loading");
-        while (results.hasChildNodes()) {
-          results.removeChild(results.lastChild);
-        }
-        noresults.classList.add("hidden");
+        clear();
         loading.classList.remove("hidden");
 
         var req = new XMLHttpRequest();
@@ -79,6 +76,14 @@
           }
         };
         req.send();
+      }
+
+      function clear() {
+        while (results.hasChildNodes()) {
+          results.removeChild(results.lastChild);
+        }
+        noresults.classList.add("hidden");
+        loading.classList.add("hidden");
       }
 
       function render(bugs) {
@@ -113,8 +118,12 @@
 
       window.addEventListener("popstate", function(e) {
         document.getElementById("q").value = e.state;
-        var query = "?quicksearch=" + e.state;
-        search(query);
+        if (e.state) {
+          var query = "?quicksearch=" + e.state;
+          search(query);
+        } else {
+          clear();
+        }
       });
 
       var query = location.search;
