@@ -1,6 +1,10 @@
 bugwords
 ========
 
+**bugwd is going away!** This site is hosted on a free Heroku account, which will
+[disappear](https://help.heroku.com/RSBRUH58/removal-of-heroku-free-product-plans-faq)
+in November 2022.  If you are interested in adopting it, please file an issue.
+
 Bugwd makes bug IDs easier to remember and to share out loud (in a meeting or
 phone call, for example) by replacing numeric IDs with a sequence of words.
 
